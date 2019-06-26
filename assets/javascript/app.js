@@ -60,5 +60,16 @@ $("#add-train-btn").on("click", function(event) {
         name: trainName,
         destination: trainDest,
         first: firstTime,
+        frequency: freq
     }
+
+    console.log(newTrain);
+
+    database.ref().push(newTrain);
+
+
+    $("#train-name-input").val("");
+    $("#destination-input").val("");
+    $("#first-time-input").val("");
+    $("#frequency-input").val("");
 })
