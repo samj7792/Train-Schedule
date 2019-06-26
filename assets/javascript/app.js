@@ -29,7 +29,49 @@ $("#add-train-btn").on("click", function(event) {
     console.log("First Time: " + firstTime);
     console.log("Frequency: " + freq);
 
-    // First time (pushed back 1 year to make sure it comes before current time)
+    // Create local "temporary" object for holding train data
+    var newTrain = {
+        name: trainName,
+        destination: trainDest,
+        first: firstTime,
+        frequency: freq
+    }
+
+    console.log(newTrain);
+
+    database.ref().push(newTrain);
+
+    // Clear input boxes
+    $("#train-name-input").val("");
+    $("#destination-input").val("");
+    $("#first-time-input").val("");
+    $("#frequency-input").val("");
+});
+
+
+// Create Firebase event for adding train info to the database and a row in the HTML when user adds an entry
+database.ref().on("child_added", function(childSnapshot){
+
+    console.log(childSnapshot.val());
+
+    childSnap = childSnapshot.val();
+
+    // Store everything into a variable
+    var trainName = childSnap.name;
+    var trainDest = childSnap.destination;
+    var firstTime = childSnap.first;
+    var freq = childSnap.frequency;
+
+    // Train info
+    console.log(trainName);
+    console.log(trainDest);
+    console.log(firstTime);
+    console.log(freq);
+
+    // Time Calculations
+    // ***********************
+
+    // First time
     var firstTimeConverted = moment(firstTime, "HH:mm");
 
     console.log("First Time Converted: " + firstTimeConverted);
@@ -55,21 +97,17 @@ $("#add-train-btn").on("click", function(event) {
     var nextTrainTime = moment(nextTrain).format("HH:mm")
     console.log("Next Train at: " + nextTrainTime);
 
-    // Create local "temporary" object for holding train data
-    var newTrain = {
-        name: trainName,
-        destination: trainDest,
-        first: firstTime,
-        frequency: freq
-    }
+    // *************************
 
-    console.log(newTrain);
+    // Create a variable holding the new row
+    var newRow = $("<tr>").append(
+        $("<td>").text(trainName),
+        $("<td>").text(trainDest),
+        $("<td>").text(freq),
+        $("<td>").text(nextTrainTime),
+        $("<td>").text(minutesTillTrain)
+    )
 
-    database.ref().push(newTrain);
-
-
-    $("#train-name-input").val("");
-    $("#destination-input").val("");
-    $("#first-time-input").val("");
-    $("#frequency-input").val("");
-})
+    // Append the new row to train-table
+    $("#train-table > tbody").append(newRow);
+});
